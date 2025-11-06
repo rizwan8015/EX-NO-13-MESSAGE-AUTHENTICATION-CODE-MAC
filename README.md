@@ -25,66 +25,54 @@ To implement MESSAGE AUTHENTICATION CODE(MAC)
 5. Security: The security of the MAC relies on the secret key \( K \) and the strength of the hash function \( H \), ensuring that an attacker cannot forge a valid MAC without knowledge of the key.
 
 ## Program:
+
 ```
-#include <stdio.h>
-#include <string.h>
-
-#define MAC_SIZE 32 // Define MAC size in bytes
-
-// Function to compute a simple MAC using XOR
-void computeMAC(const char *key, const char *message, char *mac) {
-    int key_len = strlen(key);
-    int msg_len = strlen(message);
-    
-    // XOR the key and message, repeating if necessary
-    for (int i = 0; i < MAC_SIZE; i++) {
-        mac[i] = key[i % key_len] ^ message[i % msg_len]; // Simple XOR operation
-    }
-    mac[MAC_SIZE] = '\0'; // Null-terminate the MAC string
-}
-
-int main() {
-    char key[100], message[100];
-    char mac[MAC_SIZE + 1]; // Buffer for MAC (+1 for null terminator)
-    char receivedMAC[MAC_SIZE + 1]; // Buffer for input of received MAC
-
-    // Step 1: Input secret key
-    printf("Enter the secret key: ");
-    scanf("%s", key);
-
-    // Step 2: Input the message
-    printf("Enter the message: ");
-    scanf("%s", message);
-
-    // Step 3: Compute the MAC
-    computeMAC(key, message, mac);
-
-    // Step 4: Display the computed MAC in hexadecimal
-    printf("Computed MAC (in hex): ");
-    for (int i = 0; i < MAC_SIZE; i++) {
-        printf("%02x", (unsigned char)mac[i]); // Print each byte as hex
-    }
-    printf("\n");
-
-    // Step 5: Input the received MAC (for verification)
-    printf("Enter the received MAC (as hex): ");
-    for (int i = 0; i < MAC_SIZE; i++) {
-        scanf("%02hhx", &receivedMAC[i]);
-    }
-
-    // Compare the computed MAC with the received MAC
-    if (memcmp(mac, receivedMAC, MAC_SIZE) == 0) {
-        printf("MAC verification successful. Message is authentic.\n");
-    } else {
-        printf("MAC verification failed. Message is not authentic.\n");
-    }
-
-    return 0;
+#include <stdio.h> 
+#include <string.h> 
+#include <ctype.h> 
+void encrypt(char message[], int shift); 
+void decrypt(char message[], int shift); 
+int main() { 
+char message[100]; 
+int shift; 
+printf("********** MAC [ Message Authentication Code ] **********\n\n"); 
+printf("Enter a message to encrypt: "); 
+fgets(message, sizeof(message), stdin); 
+printf("Enter the shift value: "); 
+scanf("%d", &shift); 
+encrypt(message, shift); 
+printf("\nEncrypted message: %s\n", message); 
+decrypt(message, shift); 
+printf("Decrypted message: %s\n", message); 
+return 0; 
+} 
+void encrypt(char message[], int shift) { 
+for (int i = 0; message[i] != '\0'; ++i) { 
+char ch = message[i]; 
+if (islower(ch)) { 
+message[i] = ((ch - 'a' + shift) % 26) + 'a'; 
+} 
+else if (isupper(ch)) { 
+message[i] = ((ch - 'A' + shift) % 26) + 'A'; 
+} 
+} 
+} 
+void decrypt(char message[], int shift) { 
+for (int i = 0; message[i] != '\0'; ++i) { 
+char ch = message[i]; 
+if (islower(ch)) { 
+message[i] = ((ch - 'a' - shift + 26) % 26) + 'a'; 
+} 
+else if (isupper(ch)) { 
+message[i] = ((ch - 'A' - shift + 26) % 26) + 'A'; 
+} 
+} 
 }
 ```
+
 
 ## Output:
-<img width="1037" height="315" alt="image" src="https://github.com/user-attachments/assets/0cc2e3df-5a6e-4096-8bc9-0d89d2051ea0" />
+<img width="656" height="449" alt="image" src="https://github.com/user-attachments/assets/0c7ddc9d-12e6-4a64-9a4d-ae1cfad6aeef" />
 
 
 
